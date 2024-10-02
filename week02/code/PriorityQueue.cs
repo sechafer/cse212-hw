@@ -1,4 +1,4 @@
-﻿﻿public class PriorityQueue
+﻿﻿﻿public class PriorityQueue
 {
     private Queue<PriorityItem> _queue = new Queue<PriorityItem>();
 
