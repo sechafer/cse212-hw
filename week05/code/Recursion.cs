@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 
 public static class Recursion
 {
@@ -7,20 +8,19 @@ public static class Recursion
     /// # Problem 1 #
     /// #############
     /// Using recursion, find the sum of 1^2 + 2^2 + 3^2 + ... + n^2
-    /// and return it.  Remember to both express the solution 
-    /// in terms of recursive call on a smaller problem and 
+    /// and return it.  Remember to both express the solution
+    /// in terms of recursive call on a smaller problem and
     /// to identify a base case (terminating case).  If the value of
     /// n <= 0, just return 0.   A loop should not be used.
     /// </summary>
     public static int SumSquaresRecursive(int n)
     {
-        // TODO Start Problem 1
         if (n <= 0)
-    {
-        return 0;
-    }
-    // Recursive case: n^2 + sum of squares of previous numbers
-    return (n * n) + SumSquaresRecursive(n - 1);
+        {
+            return 0;
+        }
+        // Recursive case: n^2 + sum of squares of previous numbers
+        return (n * n) + SumSquaresRecursive(n - 1);
     }
 
     /// <summary>
@@ -29,46 +29,56 @@ public static class Recursion
     /// #############
     /// Using recursion, insert permutations of length
     /// 'size' from a list of 'letters' into the results list.  This function
-    /// should assume that each letter is unique (i.e. the 
+    /// should assume that each letter is unique (i.e. the
     /// function does not need to find unique permutations).
     ///
     /// In mathematics, we can calculate the number of permutations
     /// using the formula: len(letters)! / (len(letters) - size)!
     ///
     /// For example, if letters was [A,B,C] and size was 2 then
-    /// the following would the contents of the results array after the function ran: AB, AC, BA, BC, CA, CB (might be in 
+    /// the following would the contents of the results array after the function ran: AB, AC, BA, BC, CA, CB (might be in
     /// a different order).
     ///
-    /// You can assume that the size specified is always valid (between 1 
+    /// You can assume that the size specified is always valid (between 1
     /// and the length of the letters list).
     /// </summary>
-    public static void PermutationsChoose(List<string> results, string letters, int size, string word = "")
+    public static void PermutationsChoose(List<string> results, string letters, int size, string word = "", HashSet<char> used = null)
     {
-        // Base case: if the word length is equal to the desired size, add it to the results
-    if (word.Length == size)
-    {
-        results.Add(word);
-        return;
-    }
+        if (used == null)
+        {
+            used = new HashSet<char>();
+        }
 
-    // Recursive case: loop through each letter, appending it to the current word
-    for (int i = 0; i < letters.Length; i++)
-    {
-        PermutationsChoose(results, letters, size, word + letters[i]);
-    }
+        // Base case: if the word length is equal to the desired size, add it to the results
+        if (word.Length == size)
+        {
+            results.Add(word);
+            return;
+        }
+
+        // Recursive case: loop through each letter, appending it to the current word
+        for (int i = 0; i < letters.Length; i++)
+        {
+            if (!used.Contains(letters[i]))
+            {
+                used.Add(letters[i]);
+                PermutationsChoose(results, letters, size, word + letters[i], used);
+                used.Remove(letters[i]);
+            }
+        }
     }
 
     /// <summary>
     /// #############
     /// # Problem 3 #
     /// #############
-    /// Imagine that there was a staircase with 's' stairs.  
-    /// We want to count how many ways there are to climb 
-    /// the stairs.  If the person could only climb one 
-    /// stair at a time, then the total would be just one.  
-    /// However, if the person could choose to climb either 
-    /// one, two, or three stairs at a time (in any order), 
-    /// then the total possibilities become much more 
+    /// Imagine that there was a staircase with 's' stairs.
+    /// We want to count how many ways there are to climb
+    /// the stairs.  If the person could only climb one
+    /// stair at a time, then the total would be just one.
+    /// However, if the person could choose to climb either
+    /// one, two, or three stairs at a time (in any order),
+    /// then the total possibilities become much more
     /// complicated.  If there were just three stairs,
     /// the possible ways to climb would be four as follows:
     ///
@@ -80,81 +90,80 @@ public static class Recursion
     /// With just one step to go, the ways to get
     /// to the top of 's' stairs is to either:
     ///
-    /// - take a single step from the second to last step, 
-    /// - take a double step from the third to last step, 
+    /// - take a single step from the second to last step,
+    /// - take a double step from the third to last step,
     /// - take a triple step from the fourth to last step
     ///
-    /// We don't need to think about scenarios like taking two 
+    /// We don't need to think about scenarios like taking two
     /// single steps from the third to last step because this
     /// is already part of the first scenario (taking a single
     /// step from the second to last step).
     ///
     /// These final leaps give us a sum:
     ///
-    /// CountWaysToClimb(s) = CountWaysToClimb(s-1) + 
+    /// CountWaysToClimb(s) = CountWaysToClimb(s-1) +
     ///                       CountWaysToClimb(s-2) +
     ///                       CountWaysToClimb(s-3)
     ///
     /// To run this function for larger values of 's', you will need
     /// to update this function to use memoization.  The parameter
-    /// 'remember' has already been added as an input parameter to 
+    /// 'remember' has already been added as an input parameter to
     /// the function for you to complete this task.
     /// </summary>
     public static decimal CountWaysToClimb(int s, Dictionary<int, decimal>? remember = null)
     {
         // Initialize the dictionary if it is null
-    if (remember == null)
-    {
-        remember = new Dictionary<int, decimal>();
-    }
+        if (remember == null)
+        {
+            remember = new Dictionary<int, decimal>();
+        }
 
-    // Check if the result for 's' is already computed
-    if (remember.ContainsKey(s))
-    {
-        return remember[s];
-    }
+        // Check if the result for 's' is already computed
+        if (remember.ContainsKey(s))
+        {
+            return remember[s];
+        }
 
-    // Base cases
-    if (s == 0) return 0;
-    if (s == 1) return 1;
-    if (s == 2) return 2;
-    if (s == 3) return 4;
+        // Base cases
+        if (s == 0) return 0;
+        if (s == 1) return 1;
+        if (s == 2) return 2;
+        if (s == 3) return 4;
 
-    // Recursive calculation with memoization
-    decimal ways = CountWaysToClimb(s - 1, remember) + CountWaysToClimb(s - 2, remember) + CountWaysToClimb(s - 3, remember);
-    remember[s] = ways; // Store the result in the dictionary
-    return ways;
+        // Recursive calculation with memoization
+        decimal ways = CountWaysToClimb(s - 1, remember) + CountWaysToClimb(s - 2, remember) + CountWaysToClimb(s - 3, remember);
+        remember[s] = ways; // Store the result in the dictionary
+        return ways;
     }
 
     /// <summary>
     /// #############
     /// # Problem 4 #
     /// #############
-    /// A binary string is a string consisting of just 1's and 0's.  For example, 1010111 is 
-    /// a binary string.  If we introduce a wildcard symbol * into the string, we can say that 
-    /// this is now a pattern for multiple binary strings.  For example, 101*1 could be used 
-    /// to represent 10101 and 10111.  A pattern can have more than one * wildcard.  For example, 
+    /// A binary string is a string consisting of just 1's and 0's.  For example, 1010111 is
+    /// a binary string.  If we introduce a wildcard symbol * into the string, we can say that
+    /// this is now a pattern for multiple binary strings.  For example, 101*1 could be used
+    /// to represent 10101 and 10111.  A pattern can have more than one * wildcard.  For example,
     /// 1**1 would result in 4 different binary strings: 1001, 1011, 1101, and 1111.
-    ///	
-    /// Using recursion, insert all possible binary strings for a given pattern into the results list.  You might find 
+    ///
+    /// Using recursion, insert all possible binary strings for a given pattern into the results list.  You might find
     /// some of the string functions like IndexOf and [..X] / [X..] to be useful in solving this problem.
     /// </summary>
     public static void WildcardBinary(string pattern, List<string> results)
     {
-       // Find the first occurrence of the wildcard symbol '*'
-    int index = pattern.IndexOf('*');
+        // Find the first occurrence of the wildcard symbol '*'
+        int index = pattern.IndexOf('*');
 
-    // Base case: if no wildcard is found, add the pattern to results
-    if (index == -1)
-    {
-        results.Add(pattern);
-        return;
-    }
+        // Base case: if no wildcard is found, add the pattern to results
+        if (index == -1)
+        {
+            results.Add(pattern);
+            return;
+        }
 
-    // Recursive case: replace '*' with '0' and '1' and recurse
-    WildcardBinary(pattern.Substring(0, index) + '0' + pattern.Substring(index + 1), results);
-    WildcardBinary(pattern.Substring(0, index) + '1' + pattern.Substring(index + 1), results);
-
+        // Recursive case: replace '*' with '0' and '1' and recurse
+        WildcardBinary(pattern.Substring(0, index) + '0' + pattern.Substring(index + 1), results);
+        WildcardBinary(pattern.Substring(0, index) + '1' + pattern.Substring(index + 1), results);
     }
 
     /// <summary>
@@ -165,45 +174,37 @@ public static class Recursion
     {
         // If this is the first time running the function, then we need
         // to initialize the currPath list.
-            // If this is the first time running the function, then we need
-    // to initialize the currPath list.
-    if (currPath == null) {
-        currPath = new List<ValueTuple<int, int>>();
-    }
+        if (currPath == null)
+        {
+            currPath = new List<ValueTuple<int, int>>();
+        }
 
-    // Add the current position to the path
-    currPath.Add((x, y));
+        // Add the current position to the path
+        currPath.Add((x, y));
 
-    // Base Case: Check if we've reached the end of the maze
-    if (maze.IsEnd(x, y)) {
-        // Convert the current path to a string and add it to the results list
-        results.Add(string.Join(" -> ", currPath));
-        currPath.RemoveAt(currPath.Count - 1); // Backtrack
-        return;
-    }
+        // Base Case: Check if we've reached the end of the maze
+        if (maze.IsEnd(x, y))
+        {
+            // Convert the current path to a string and add it to the results list
+            results.Add($"<List>{{{string.Join(", ", currPath)}}}");
+            currPath.RemoveAt(currPath.Count - 1); // Backtrack
+            return;
+        }
 
-    // Explore all possible directions (up, down, left, right)
-    // Move Right
-    if (maze.IsValidMove(currPath, x + 1, y)) {
-        SolveMaze(results, maze, x + 1, y, currPath);
-    }
+        // Explore all possible directions (right, down, left, up)
+        int[,] directions = { { 0, 1 }, { 1, 0 }, { 0, -1 }, { -1, 0 } };
+        for (int i = 0; i < 4; i++)
+        {
+            int newX = x + directions[i, 0];
+            int newY = y + directions[i, 1];
 
-    // Move Down
-    if (maze.IsValidMove(currPath, x, y + 1)) {
-        SolveMaze(results, maze, x, y + 1, currPath);
-    }
+            if (maze.IsValidMove(currPath, newX, newY))
+            {
+                SolveMaze(results, maze, newX, newY, currPath);
+            }
+        }
 
-    // Move Left
-    if (maze.IsValidMove(currPath, x - 1, y)) {
-        SolveMaze(results, maze, x - 1, y, currPath);
-    }
-
-    // Move Up
-    if (maze.IsValidMove(currPath, x, y - 1)) {
-        SolveMaze(results, maze, x, y - 1, currPath);
-    }
-
-    // Backtrack: Remove the current position from the path before returning to the previous step
-    currPath.RemoveAt(currPath.Count - 1);
+        // Backtrack: Remove the current position from the path before returning to the previous step
+        currPath.RemoveAt(currPath.Count - 1);
     }
 }
